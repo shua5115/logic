@@ -1,3 +1,5 @@
+pub mod analysis;
+
 #[derive(Debug)]
 pub enum Op {
     Value(bool),
