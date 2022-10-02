@@ -32,6 +32,18 @@ mod tests {
         println!("{}", imp);
         println!("{}", table);
     }
+
+    #[test]
+    fn empty_table() {
+        let a = Node::val(true);
+        let b = Node::val(false);
+        let and = Box::new(And(a, b));
+        let c = Node::val(false);
+        let imp = Imply(and, c);
+        let table = TruthTable::new(&imp).unwrap();
+        assert_eq!(table.results.len(), 1);
+    }
+
     #[test]
     fn from_table() {
         let a = Node::var("a");

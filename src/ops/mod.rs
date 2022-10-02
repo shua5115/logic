@@ -201,6 +201,8 @@ impl std::fmt::Display for Node {
 }
 
 impl<'a> TruthTable<'a> {
+    /// Creates a truth table from a node tree by evaluating every variable combination.
+    /// Returns None if there are too many variables
     pub fn new(n: &'a Node) -> Option<Self> {
         let vars = n.collect_vars();
         let var_count = vars.len() as u32;
