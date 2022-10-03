@@ -124,6 +124,24 @@ impl Clone for Node {
     }
 }
 
+impl PartialEq for Node {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Value(l0), Value(r0)) => l0 == r0,
+            (Variable(l0), Variable(r0)) => l0 == r0,
+            (Not(l0), Not(r0)) => l0 == r0,
+            (And(l0, l1), And(r0, r1)) => (l0 == r0 && l1 == r1) || (l0 == r1 && l1 == r0),
+            (Or(l0, l1), Or(r0, r1)) => (l0 == r0 && l1 == r1) || (l0 == r1 && l1 == r0),
+            (Nand(l0, l1), Nand(r0, r1)) => (l0 == r0 && l1 == r1) || (l0 == r1 && l1 == r0),
+            (Nor(l0, l1), Nor(r0, r1)) => (l0 == r0 && l1 == r1) || (l0 == r1 && l1 == r0),
+            (Xor(l0, l1), Xor(r0, r1)) => (l0 == r0 && l1 == r1) || (l0 == r1 && l1 == r0),
+            (Eq(l0, l1), Eq(r0, r1)) => (l0 == r0 && l1 == r1) || (l0 == r1 && l1 == r0),
+            (Imply(l0, l1), Imply(r0, r1)) => (l0 == r0 && l1 == r1) || (l0 == r1 && l1 == r0),
+            _ => false
+        }
+    }
+}
+
 impl From<Box<Node>> for Node {
     fn from(b: Box<Node>) -> Self {
         match *b {

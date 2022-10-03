@@ -150,7 +150,6 @@ impl Node {
             source = candidates;
             if changed.len() == 0 { break; } // then all values were moved
         }
-        // TODO: construct tree from simple
         let var_names = &table.vars;
         let mut head: Option<Box<Node>> = None;
         for br in simple {
@@ -169,5 +168,29 @@ impl Node {
             Some(h) => h,
             _ => Box::new(Value(false))
         }
+    }
+    pub fn to_nand (&self) -> Box<Self> {
+        let out = match self {
+            Value(b) => Box::new(Value(*b)),
+            Variable(name) => Box::new(Variable(name.clone())),
+            Not(a) => Box::new(Nand(a.to_nand(), a.to_nand())),
+            And(a, b) => Not(Box::new(Nand(a.to_nand(), b.to_nand()))).to_nand(),
+            Or(a, b) => Box::new(Nand(Not(a.clone()).to_nand(), Not(b.clone()).to_nand())),
+            Nor(a, b) => Not(Box::new(Or(a.to_nand(), b.to_nand()))).to_nand(),
+            Xor(a, b) => Or(Box::new(And(a.clone(), Not(b.clone()).to_nand())), Box::new(And(Not(a.clone()).to_nand(), b.clone()))).to_nand(),
+            Eq(a, b) => Not(Box::new(Xor(a.clone(), b.clone()))).to_nand(),
+            Imply(a, b) => Or(Box::new(Not(a.clone())), b.clone()).to_nand(),
+            _ => Box::new(self.clone())
+        };
+
+        if let Nand(a, b) = out.as_ref() {
+            if let (Nand(l0, l1), Nand(r0, r1)) = (a.as_ref(), b.as_ref()) {
+                if l0 == l1 && l0 == r0 && l0 == r1 {
+                    return l0.clone();
+                }
+            }
+        }
+
+        out
     }
 }

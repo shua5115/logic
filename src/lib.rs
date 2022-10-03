@@ -1,4 +1,5 @@
-mod ops;
+pub mod ops;
+pub mod circuit;
 
 #[cfg(test)]
 mod tests {
@@ -66,5 +67,33 @@ mod tests {
         //println!("{}", table2);
         assert_eq!(table, table1);
         assert_eq!(table, table2);
+    }
+    #[test]
+    fn nand_from_sop() {
+        let a = Node::var("a");
+        let b = Node::var("b");
+        let and = Box::new(And(a, b));
+        let c = Node::var("c");
+        let imp = Box::new(Imply(and, c));
+        let table = TruthTable::new(imp.as_ref()).unwrap();
+        let expr1 = Node::from_table(&table, true);
+        let table1 = TruthTable::new(expr1.as_ref()).unwrap();
+        println!("{}", imp);
+        println!("{}", expr1.to_nand());
+        assert_eq!(table, table1);
+    }
+    #[test]
+    fn nand_direct() {
+        let a = Node::var("a");
+        let b = Node::var("b");
+        let and = Box::new(And(a, b));
+        let c = Node::var("c");
+        let xor = Box::new(Xor(and, c));
+        let expr1 = xor.to_nand();
+        println!("{}", xor);
+        println!("{}", expr1);
+        let table = TruthTable::new(xor.as_ref());
+        let table1 = TruthTable::new(expr1.as_ref());
+        assert_eq!(table, table1);
     }
 }
