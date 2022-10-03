@@ -62,7 +62,7 @@ impl Node {
             }
             None
         }
-
+        
         fn bool_row_to_node<'a, I>(arr: &Vec<Option<bool>>, mut name_iter: I, sum_of_products: bool) -> Box<Node>
         where I:Iterator<Item = &'a &'a str>
         {
@@ -98,12 +98,9 @@ impl Node {
                 }
             }
         }
-
         let mut true_results: usize = 0;
-        
         let mut source = Vec::new(); // all possibilities
         let mut simple: Vec<BoolRow> = Vec::new(); // the final expression, as BoolRows
-
         for res in &table.results {
             if res.1 { true_results += 1; }
             if res.1 == sum_of_products { source.push(bool_row(res.0)) }
@@ -111,11 +108,9 @@ impl Node {
         if true_results == 0 || true_results == table.vars.len() {
             return Box::new(Value(true_results > 0));
         }
-
         loop {
             let mut changed: BTreeSet<usize> = BTreeSet::new(); // all indexes of source which were simplified
             let mut candidates: Vec<BoolRow> = Vec::new(); // all simplified BoolRows to continue to next iteration
-            // changed.clear();
             let size = source.len();
             for i in 0..size {
                 for j in (i+1)..size {
